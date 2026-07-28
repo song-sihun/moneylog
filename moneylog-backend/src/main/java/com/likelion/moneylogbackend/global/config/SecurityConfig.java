@@ -2,6 +2,7 @@ package com.likelion.moneylogbackend.global.config;
 
 import com.likelion.moneylogbackend.global.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +23,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${cors.allowed-origins}")
+    private List<String> allowedOrigins;
 
     // 인증 없이 접근 허용할 경로 (화이트리스트)
     private static final String[] WHITELIST = {
@@ -65,6 +69,8 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://127.0.0.1:5173"
         ));
+
+        configuration.setAllowedOriginPatterns(allowedOrigins);
 
         // 허용할 HTTP 메서드
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));

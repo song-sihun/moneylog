@@ -1,0 +1,26 @@
+echo "# 260722moneylog" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/song-sihun/260722moneylog.git
+git push -u origin main
+
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:moneylog}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate # 운영은 스키마 검증만 실행
+    show-sql: false
+    open-in-view: false
+
+jwt:
+  secret: ${JWT_SECRET} # EC2 Docker 실행 시 -e JWT_SECRET=... 으로 주입
+  expiration-ms: 86400000
+
+EC2 배포 팁: Docker 실행 시 -e SPRING_PROFILES_ACTIVE=prod 옵션을 주면 prod 프로파일로 전환되어 운영용 MySQL에 접속

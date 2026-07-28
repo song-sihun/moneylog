@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: moneylog-backend
+  profiles:
+    active: local # 기본 활성 프로파일
+
+---
+# ===== 로컬 개발 프로파일 (H2 메모리 DB 또는 로컬 MySQL) =====
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:h2:mem:moneylogdb;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true # http://localhost:8080/h2-console 접근 가능
+
+  jpa:
+    hibernate:
+      ddl-auto: update # 로컬에서는 테이블 자동 생성/수정
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    open-in-view: false
+
+jwt:
+  # 환경변수가 없으면 뒤의 기본 32자 이상 문자열 사용
+  secret: ${JWT_SECRET:c2VjcmV0S2V5Rm9yR2FneWVidUFwcGxpY2F0aW9uSnd0VG9rZW5TZWNyZXRLZXlNdXN0QmVMb25nRW5vdWdo}
+  expiration-ms: 86400000 # 24시간 (10000000은 약 2.7시간이라 조금 짧을 수 있음)
+
+---
+# ===== 운영 프로파일 (EC2 + Docker + MySQL 8) =====
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/${DB_NAME:moneylog}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update # 운영은 스키마 검증만 실행
+    show-sql: false
+    open-in-view: false
+
+jwt:
+  secret: ${JWT_SECRET} # EC2 Docker 실행 시 -e JWT_SECRET=... 으로 주입
+  expiration-ms: 86400000
